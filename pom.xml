@@ -25,10 +25,10 @@
     <selenium.version>3.141.59</selenium.version>
     <awaitility.version>4.1.0</awaitility.version>
     <p6spy.version>3.9.1</p6spy.version>
-    <mockwebserver.version>4.9.0</mockwebserver.version>
+    <mockwebserver.version>5.0.0-alpha.2</mockwebserver.version>
     <mockito.version>3.9.0</mockito.version>
-    <okhttp3.version>4.9.0</okhttp3.version>
-    <okio.version>2.9.0</okio.version>
+    <okhttp3.version>5.0.0-alpha.2</okhttp3.version>
+    <okio.version>3.0.0-alpha.6</okio.version>
     <selenide.version>5.21.0</selenide.version>
     <guava.version>29.0-jre</guava.version>
   </properties>

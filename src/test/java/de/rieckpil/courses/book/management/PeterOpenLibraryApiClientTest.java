@@ -16,6 +16,8 @@ import reactor.netty.tcp.TcpClient;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static reactor.netty.tcp.TcpClient.create;
@@ -41,20 +43,22 @@ public class PeterOpenLibraryApiClientTest {
   private OpenLibraryApiClient cut;     // class under test
 
   @BeforeEach
-  public void beforeEach() throws IOException {
+  void beforeEach() throws IOException {
+    Logger.getLogger(MockWebServer.class.getName()).setLevel(Level.FINEST);
+
     mockWebServer = new MockWebServer();
     mockWebServer.start();
 
-    TcpClient tcpClient = create()
-      .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1_000)
+    HttpClient httpClient = HttpClient.create()
+      .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2_000)
       .doOnConnected(connection ->
-        connection.addHandlerLast(new ReadTimeoutHandler(1))
-          .addHandlerLast(new WriteTimeoutHandler(1)));
+        connection.addHandlerLast(new ReadTimeoutHandler(2))
+          .addHandlerLast(new WriteTimeoutHandler(2)));
 
     this.cut = new OpenLibraryApiClient(
       WebClient
         .builder()
-        .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
+        .clientConnector(new ReactorClientHttpConnector(httpClient))
         .baseUrl(mockWebServer.url("/").toString())
         .build()
     );
@@ -97,6 +101,8 @@ public class PeterOpenLibraryApiClientTest {
 
   @Test
   void shouldReturnBookWhenResultIsSuccessfulButLackingAllInformation() {
+
+
     String response = """
         {
           "ISBN:9780596004651": {
@@ -122,10 +128,13 @@ public class PeterOpenLibraryApiClientTest {
         }
       """;
 
-    this.mockWebServer.enqueue(new MockResponse()
+
+
+    mockWebServer.enqueue( new MockResponse()
       .addHeader("Content-Type", "application/json; charset=utf-8")
       .setResponseCode(HttpStatus.OK.value())
-      .setBody(response));
+      .setBody(response.replace("\n", "")));
+
 
     Book result = cut.fetchMetadataForBook(ISBN);
 
