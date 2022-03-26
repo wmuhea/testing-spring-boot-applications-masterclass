@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.DockerComposeContainer;
@@ -58,6 +59,15 @@ public abstract class AbstractWebTest {
         .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("foo", "bar")))
         .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:9324", "eu-central-1"))
         .build();
+    }
+
+    @Bean
+    public JwtIssuerAuthenticationManagerResolver jwtAuthenticationManagerResolver() {
+      return new JwtIssuerAuthenticationManagerResolver(
+        "http://localhost:8888/auth/realms/spring",
+        "http://172.17.0.1:8888/auth/realms/spring",
+        "http://host.docker.internal:8888/auth/realms/spring"
+      );
     }
   }
 }

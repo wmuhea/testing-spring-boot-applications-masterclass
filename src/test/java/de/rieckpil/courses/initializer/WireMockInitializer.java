@@ -1,5 +1,7 @@
 package de.rieckpil.courses.initializer;
 
+import java.util.Arrays;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import de.rieckpil.courses.stubs.OAuth2Stubs;
@@ -13,8 +15,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-
-import java.util.Arrays;
 
 @Order(Ordered.LOWEST_PRECEDENCE - 1000)
 public class WireMockInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -52,7 +52,7 @@ public class WireMockInitializer implements ApplicationContextInitializer<Config
         .of(
           String.format(
             "spring.security.oauth2.resourceserver.jwt.issuer-uri=http://%s:8888/auth/realms/spring",
-            SystemUtils.IS_OS_WINDOWS ? "host.docker.internal" : "172.17.0.1")
+            SystemUtils.IS_OS_LINUX ? "172.17.0.1" : "localhost")
         ).applyTo(applicationContext);
     }
 
