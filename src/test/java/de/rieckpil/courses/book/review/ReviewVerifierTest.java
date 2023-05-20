@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -30,8 +32,6 @@ class ReviewVerifierTest {
   @Test
   void shouldFailWhenReviewContainsSwearWord() {
     String review = "This book is shit";
-    System.out.println("Testing a review");
-
     boolean result = reviewVerifier.doesMeetQualityStandards(review);
     assertFalse(result, "ReviewVerifier did not detect swear word");
   }
@@ -39,19 +39,41 @@ class ReviewVerifierTest {
   @Test
   @DisplayName("Should fail when review contains 'lorem ipsum'")
   void testLoremIpsum() {
+    String review = """
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+      eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      Ut enim ad minim veniam, quis nostrud exercitation
+      ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      """;
+    boolean result = reviewVerifier.doesMeetQualityStandards(review);
+    assertFalse(result, "ReviewVerifier did not detect lorum ipsum");
   }
 
   @ParameterizedTest
+  //@EnumSource
+  //@MethodSource
+  //@ValueSource
   @CsvFileSource(resources = "/badReview.csv")
   void shouldFailWhenReviewIsOfBadQuality(String review) {
+    boolean result = reviewVerifier.doesMeetQualityStandards(review);
+    assertFalse(result, "ReviewVerifier did not detect bad review");
   }
 
   @RepeatedTest(5)
   void shouldFailWhenRandomReviewQualityIsBad(@RandomReview String review) {
+
+    boolean result = reviewVerifier.doesMeetQualityStandards(review);
+    assertFalse(result, "ReviewVerifier did not detect bad review");
   }
 
   @Test
   void shouldPassWhenReviewIsGood() {
+    String review = """
+      I recommend this book totally for someone who
+      who wants to lean Junit testing in depth
+      """;
+    boolean result = reviewVerifier.doesMeetQualityStandards(review);
+    assertTrue(result, "ReviewVerifier did not detect good review");
   }
 
   @Test
